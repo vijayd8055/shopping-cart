@@ -14,6 +14,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mindtree.shoppingcart.dto.RemoveProductFromCartDto;
+import com.mindtree.shoppingcart.dto.UpdateProductDto;
+import com.mindtree.shoppingcart.dto.UserProductDto;
+import com.mindtree.shoppingcart.entity.User;
 import com.mindtree.shoppingcart.exception.ShoppingCartServiceException;
 import com.mindtree.shoppingcart.service.ShoppingCartService;
 
@@ -104,10 +108,10 @@ public class ShoppingCartController {
 
 	//Remove All Product from Cart	 -> exception handling done
 	@RequestMapping(value = "/removeAllProductFromCart", method = RequestMethod.POST)
-	public ResponseEntity<?> removeAllProductFromCart(@RequestBody RemoveAllProductDto removeAllProduct) {
+	public ResponseEntity<?> removeAllProductFromCart(@RequestBody User user) {
 		try {
 			String message = "";
-			message = shoppingCartService.removeAllProductFromCart(removeAllProduct);
+			message = shoppingCartService.removeAllProductFromCart(user);
 			return new ResponseEntity<>(message, HttpStatus.OK);
 		} catch (ShoppingCartServiceException e) {
 			return new ResponseEntity<>("Exception"+e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
@@ -128,10 +132,10 @@ public class ShoppingCartController {
 
 	//View My Cart	 -> exception handling done	
 	@RequestMapping(value = "/viewMyCart", method = RequestMethod.POST)
-	public ResponseEntity<?> viewMyCart(@RequestBody ViewMyCartDto myCart) {
+	public ResponseEntity<?> viewMyCart(@RequestBody User user) {
 		try {
 			Map<String, Object> response = null;
-			response = shoppingCartService.viewMyCart(myCart);
+			response = shoppingCartService.viewMyCart(user);
 			return new ResponseEntity<>(response, HttpStatus.OK);
 		} catch (ShoppingCartServiceException e) {
 			return new ResponseEntity<>("Exception"+e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);

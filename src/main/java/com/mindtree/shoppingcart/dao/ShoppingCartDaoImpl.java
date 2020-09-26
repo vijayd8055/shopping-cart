@@ -2,6 +2,7 @@ package com.mindtree.shoppingcart.dao;
 
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
@@ -24,6 +25,10 @@ import com.mindtree.shoppingcart.entity.Book;
 import com.mindtree.shoppingcart.entity.Cart;
 import com.mindtree.shoppingcart.entity.CartProduct;
 import com.mindtree.shoppingcart.entity.Product;
+import com.mindtree.shoppingcart.entity.User;
+import com.mindtree.shoppingcart.exception.AddProductException;
+import com.mindtree.shoppingcart.exception.DeleteApparalException;
+import com.mindtree.shoppingcart.exception.DeleteBookException;
 import com.mindtree.shoppingcart.exception.ProductException;
 import com.mindtree.shoppingcart.exception.ShoppingCartException;
 import com.mindtree.shoppingcart.repository.ApparalRepository;
@@ -359,6 +364,34 @@ public class ShoppingCartDaoImpl implements ShoppingCartDao {
 		} catch (Exception e) {
 			logger.error(e.getLocalizedMessage() + ": Error in getProductbyCategory()");
 			throw new ShoppingCartException(e.getMessage() + ": Error in getProductbyCategory()");
+		}
+	}
+
+	@Override
+	public String addBook(Book book) throws AddProductException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String addApparal(Apparal apparal) throws AddProductException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public User getUserbyID(int userId) throws ProductException {
+		try {
+			String message = "";
+			if (userRepo.findById(userId) != null)
+				return userRepo.getOne(userId);
+			else
+				message = "Product ID is Invalid!";
+				logger.info(message);
+				return null;
+		} catch (Exception e) {
+			logger.error(e.getMessage() + ": Error in getProductbyId()");
+			throw new ProductException(e.getMessage() + ": Error in getProductbyId()");
 		}
 	}	
 }

@@ -15,16 +15,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.mindtree.shoppingcart.dao.ShoppingCartDao;
-import com.mindtree.shoppingcart.dao.ShoppingCartDaoImpl;
 import com.mindtree.shoppingcart.dto.ApparalRequestDto;
 import com.mindtree.shoppingcart.dto.ApparalResponseDto;
 import com.mindtree.shoppingcart.dto.BookRequestDto;
 import com.mindtree.shoppingcart.dto.BookResponseDto;
+import com.mindtree.shoppingcart.dto.RemoveProductFromCartDto;
+import com.mindtree.shoppingcart.dto.UpdateProductDto;
+import com.mindtree.shoppingcart.dto.UserProductDto;
 import com.mindtree.shoppingcart.entity.Apparal;
 import com.mindtree.shoppingcart.entity.Book;
 import com.mindtree.shoppingcart.entity.Cart;
 import com.mindtree.shoppingcart.entity.CartProduct;
 import com.mindtree.shoppingcart.entity.Product;
+import com.mindtree.shoppingcart.entity.User;
+import com.mindtree.shoppingcart.exception.AddProductException;
+import com.mindtree.shoppingcart.exception.DeleteApparalException;
+import com.mindtree.shoppingcart.exception.DeleteBookException;
 import com.mindtree.shoppingcart.exception.ProductException;
 import com.mindtree.shoppingcart.exception.ShoppingCartException;
 import com.mindtree.shoppingcart.exception.ShoppingCartServiceException;
@@ -134,10 +140,9 @@ public abstract class ShoppingCartServiceImpl implements ShoppingCartService {
 			CartProductPK cartProductPK = new CartProductPK();
 
 			// Get User
-			UserDetail user = dao.getUserbyNameEmail(userProduct.getUserName(), userProduct.getEmail());
+			User user = dao.getUserbyID(userProduct.getUserId());
 			if (null == user) {
-				message = "User not present with username:" + userProduct.getUserName() + " and email:"
-						+ userProduct.getEmail();
+				message = "User not present with id:" + userProduct.getUserId() ;
 				logger.info(message);
 				return message;
 			}
@@ -166,7 +171,7 @@ public abstract class ShoppingCartServiceImpl implements ShoppingCartService {
 				cartProduct.setQuantity(productIdCount);
 			}
 
-			cartValue = cartValue + product.getUnitPrice(); // total cart value
+			cartValue = cartValue + product.getPrice(); // total cart value
 			cart.setTotalAmount(cartValue);
 			cartProductPK.setCart(cart);
 			cartProductPK.setProduct(product);
@@ -238,11 +243,9 @@ public abstract class ShoppingCartServiceImpl implements ShoppingCartService {
 				throw new NumberFormatException(message);
 			}
 			// Get User
-			UserDetail user = dao.getUserbyNameEmail(removeProductById.getUserName(), removeProductById.getEmail());
+			User user = dao.getUserbyID(removeProductById.getUserId());
 			if (null == user) {
-				message = "User not present with username:" + removeProductById.getUserName() + " and email:"
-						+ removeProductById.getEmail();
-				logger.info(message);
+				message = "User not present with ID:" +removeProductById.getUserId(); 
 				return message;
 			}
 			// Get Cart Detail
@@ -269,7 +272,7 @@ public abstract class ShoppingCartServiceImpl implements ShoppingCartService {
 			}
 
 			if (true == resultCartProductEntry) {
-				cartValue = cartValue - product.getUnitPrice(); // total cart value
+				cartValue = cartValue - product.getPrice(); // total cart value
 				cartDetail.setTotalAmount(cartValue);
 				resultCartProductEntry = dao.updateCart(cartDetail);
 				product.setQuantity(product.getQuantity() + 1);
@@ -286,7 +289,7 @@ public abstract class ShoppingCartServiceImpl implements ShoppingCartService {
 	}
 
 	// Remove All Product from Cart
-	public String removeAllProductFromCart(RemoveAllProductDto removeAllProduct) throws ShoppingCartServiceException {
+	public String removeAllProductFromCart(User user) throws ShoppingCartServiceException {
 		String message = null;
 		try {
 			boolean resultCartProductEntry = false;
@@ -295,11 +298,10 @@ public abstract class ShoppingCartServiceImpl implements ShoppingCartService {
 			List<CartProduct> cartProducts = null;
 
 			// Get User
-			UserDetail user = dao.getUserbyNameEmail(removeAllProduct.getUserName(), removeAllProduct.getEmail());
+			User userResponse = dao.getUserbyID(user.getUserId());
 
-			if (null == user) {
-				message = "User not present with username:" + removeAllProduct.getUserName() + " and email:"
-						+ removeAllProduct.getEmail();
+			if (null == userResponse) {
+				message = "User not present with id:" + user.getUserId();
 				logger.info(message);
 				return message;
 			}
@@ -343,7 +345,7 @@ public abstract class ShoppingCartServiceImpl implements ShoppingCartService {
 				product.setQuantity(product.getQuantity() + quantityInCart);
 				dao.updateProductQuantityInventory(product);
 			}
-			totalPriceReduced = product.getUnitPrice() * quantityInCart;
+			totalPriceReduced = product.getPrice() * quantityInCart;
 			return totalPriceReduced;
 		} catch (Exception e) {
 			throw new ShoppingCartServiceException(e);
@@ -374,7 +376,7 @@ public abstract class ShoppingCartServiceImpl implements ShoppingCartService {
 	}
 
 	// View My Cart
-	public Map<String, Object> viewMyCart(ViewMyCartDto myCart) throws ShoppingCartServiceException {
+	public Map<String, Object> viewMyCart(User user) throws ShoppingCartServiceException {
 		String message = null;
 		try {
 			double totalCartValue = 0;
@@ -382,9 +384,9 @@ public abstract class ShoppingCartServiceImpl implements ShoppingCartService {
 			List<Object> prods = new ArrayList<Object>();
 			Map<String, Object> hashProds = new HashMap<String, Object>();
 
-			UserDetail user = dao.getUserbyNameEmail(myCart.getUserName(), myCart.getEmail());
-			if (null == user) {
-				message = "User not present with username:" + myCart.getUserName() + " and email:" + myCart.getEmail();
+			User userDetails = dao.getUserbyID(user.getUserId());
+			if (null == userDetails) {
+				message = "User not present with ID:" +user.getUserId();
 				hashProds.put("message", message);
 				logger.info(message);
 				return hashProds;
@@ -515,7 +517,7 @@ public abstract class ShoppingCartServiceImpl implements ShoppingCartService {
 
 	// # Method
 	private double getCalculateTotalPrice(CartProduct product) {
-		return (product.getQuantity() * product.getPk().getProduct().getUnitPrice());
+		return (product.getQuantity() * product.getPk().getProduct().getPrice());
 	}
 
 	// Update Product In Cart
@@ -532,15 +534,14 @@ public abstract class ShoppingCartServiceImpl implements ShoppingCartService {
 				throw new NumberFormatException(message);
 			}
 			// Get User
-			UserDetail user = dao.getUserbyNameEmail(updateProduct.getUserName(), updateProduct.getEmail());
-			if (null == user) {
-				message = "User not present with username:" + updateProduct.getUserName() + " and email:"
-						+ updateProduct.getEmail();
+			User userDetail = dao.getUserbyID(updateProduct.getUserId());
+			if (null == userDetail) {
+				message = "User not present with ID:" + updateProduct.getUserId() ;
 				logger.info(message);
 				return message;
 			}
 			// Get Cart Detail
-			Cart cartDetail = dao.getCartDetailbyId(user.getCart().getCartId());
+			Cart cartDetail = dao.getCartDetailbyId(userDetail.getCart().getCartId());
 			cartValue = cartDetail.getTotalAmount(); // cart value
 
 			// Get Product by product Id
@@ -561,7 +562,7 @@ public abstract class ShoppingCartServiceImpl implements ShoppingCartService {
 
 				resultCartProductEntry = dao.deleteCartProductEntry(cartProductPresent);
 				if (true == resultCartProductEntry) {
-					cartValue = cartValue - product.getUnitPrice() * quantityGap; // total cart value
+					cartValue = cartValue - product.getPrice() * quantityGap; // total cart value
 					cartDetail.setTotalAmount(cartValue);
 					resultCartProductEntry = dao.updateCart(cartDetail);
 					product.setQuantity(product.getQuantity() + quantityGap); // Increase Product Inventory
@@ -584,7 +585,7 @@ public abstract class ShoppingCartServiceImpl implements ShoppingCartService {
 					resultCartProductEntry = dao.updateCartProduct(cartProductPresent);
 
 					if (true == resultCartProductEntry) {
-						cartValue = cartValue + product.getUnitPrice() * quantityGap; // total cart value
+						cartValue = cartValue + product.getPrice() * quantityGap; // total cart value
 						cartDetail.setTotalAmount(cartValue);
 						resultCartProductEntry = dao.updateCart(cartDetail);
 						product.setQuantity(product.getQuantity() - quantityGap); // decrease Product Inventory
@@ -598,7 +599,7 @@ public abstract class ShoppingCartServiceImpl implements ShoppingCartService {
 				resultCartProductEntry = dao.updateCartProduct(cartProductPresent);
 
 				if (true == resultCartProductEntry) {
-					cartValue = cartValue - product.getUnitPrice() * quantityGap; // total cart value
+					cartValue = cartValue - product.getPrice() * quantityGap; // total cart value
 					cartDetail.setTotalAmount(cartValue);
 					resultCartProductEntry = dao.updateCart(cartDetail);
 					product.setQuantity(product.getQuantity() + quantityGap); // Increase Product Inventory
