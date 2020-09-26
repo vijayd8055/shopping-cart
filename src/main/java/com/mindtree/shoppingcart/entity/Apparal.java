@@ -9,7 +9,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "APPARAL")
-public class Apparal extends Product implements Serializable,Comparable<Apparal>{
+public class Apparal extends Product implements Serializable, Comparable<Apparal> {
 
 	/**
 	 * 
@@ -24,44 +24,40 @@ public class Apparal extends Product implements Serializable,Comparable<Apparal>
 
 	@Column(name = "DESIGN")
 	private String design;
-	
-	
+
 	public String getType() {
 		return type;
 	}
-
 
 	public void setType(String type) {
 		this.type = type;
 	}
 
-
 	public String getBrand() {
 		return brand;
 	}
-
 
 	public void setBrand(String brand) {
 		this.brand = brand;
 	}
 
-
 	public String getDesign() {
 		return design;
 	}
-
 
 	public void setDesign(String design) {
 		this.design = design;
 	}
 
-
 	@Override
 	public int compareTo(Apparal o) {
-		// TODO Auto-generated method stub
-		return 0;
+		if (this.getProductId() == o.getProductId())
+			return 0;
+		else if (this.getProductId() > o.getProductId())
+			return 1;
+		else
+			return -1;
 	}
-
 
 	@Override
 	public int hashCode() {
@@ -72,7 +68,6 @@ public class Apparal extends Product implements Serializable,Comparable<Apparal>
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		return result;
 	}
-
 
 	@Override
 	public boolean equals(Object obj) {
@@ -101,12 +96,10 @@ public class Apparal extends Product implements Serializable,Comparable<Apparal>
 		return true;
 	}
 
-
 	@Override
 	public String toString() {
 		return "Apparal [type=" + type + ", brand=" + brand + ", design=" + design + "]";
 	}
-
 
 	public Apparal(int productId, String productName, int quantity, float price, List<CartProduct> cartProducts,
 			String type, String brand, String design) {
@@ -116,17 +109,14 @@ public class Apparal extends Product implements Serializable,Comparable<Apparal>
 		this.design = design;
 	}
 
-
 	public Apparal() {
 		super();
-		// TODO Auto-generated constructor stub
-	}
 
+	}
 
 	public Apparal(int productId, String productName, int quantity, float price, List<CartProduct> cartProducts) {
 		super(productId, productName, quantity, price, cartProducts);
-		// TODO Auto-generated constructor stub
+
 	}
 
-	
 }

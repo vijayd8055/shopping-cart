@@ -11,6 +11,11 @@ import com.mindtree.shoppingcart.entity.Product;
 @Embeddable
 public class CartProductPK implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@ManyToOne
 	private Cart cart;
 	

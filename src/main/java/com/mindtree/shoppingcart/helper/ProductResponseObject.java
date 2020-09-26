@@ -1,5 +1,7 @@
 package com.mindtree.shoppingcart.helper;
 
+import org.springframework.stereotype.Component;
+
 import com.mindtree.shoppingcart.dto.ApparalRequestDto;
 import com.mindtree.shoppingcart.dto.ApparalResponseDto;
 import com.mindtree.shoppingcart.dto.BookRequestDto;
@@ -7,6 +9,7 @@ import com.mindtree.shoppingcart.dto.BookResponseDto;
 import com.mindtree.shoppingcart.entity.Apparal;
 import com.mindtree.shoppingcart.entity.Book;
 
+@Component
 public class ProductResponseObject {
 
 	public Apparal createApparalResponseObject(ApparalRequestDto newApparal) {
@@ -54,5 +57,17 @@ public class ProductResponseObject {
 		bookDto.setUnitPrice(book.getPrice());
 		bookDto.setQuantity(quantity);
 		return bookDto;
+	}
+
+	public ApparalResponseDto createApparalResponseObject(Apparal apparal,int quantity) {
+		ApparalResponseDto apparalDto = new ApparalResponseDto();
+		apparalDto.setApparalId(apparal.getProductId());
+		apparalDto.setBrand(apparal.getBrand());
+		apparalDto.setDesign(apparal.getDesign());
+		apparalDto.setProductName(apparal.getProductName());
+		apparalDto.setType(apparal.getType());
+		apparalDto.setUnitPrice(apparal.getPrice());
+		apparalDto.setQuantity(quantity);
+		return apparalDto;
 	}
 }

@@ -2,7 +2,7 @@ package com.mindtree.shoppingcart.dto;
 
 import java.io.Serializable;
 
-public class BookRequestDto implements Serializable{
+public class BookRequestDto implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private String genre;
@@ -101,5 +101,5 @@ public class BookRequestDto implements Serializable{
 		return "BookRequestDto [genre=" + genre + ", author=" + author + ", publication=" + publication + ", quantity="
 				+ quantity + ", unitPrice=" + unitPrice + "]";
 	}
-	
+
 }

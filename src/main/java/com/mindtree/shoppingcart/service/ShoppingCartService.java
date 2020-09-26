@@ -3,18 +3,17 @@ package com.mindtree.shoppingcart.service;
 import java.util.List;
 import java.util.Map;
 
-import com.mindtree.shoppingcart.dto.ApparalRequestDto;
-import com.mindtree.shoppingcart.dto.BookRequestDto;
+import org.springframework.stereotype.Service;
+
 import com.mindtree.shoppingcart.dto.RemoveProductFromCartDto;
 import com.mindtree.shoppingcart.dto.UpdateProductDto;
 import com.mindtree.shoppingcart.dto.UserProductDto;
 import com.mindtree.shoppingcart.entity.User;
 import com.mindtree.shoppingcart.exception.ShoppingCartServiceException;
 
+@Service
 public interface ShoppingCartService {
-public String addBook(BookRequestDto newBook) throws ShoppingCartServiceException;
-	
-	public String addApparal(ApparalRequestDto newApparal) throws ShoppingCartServiceException;
+
 	
 	public String addToCart(UserProductDto userProduct) throws ShoppingCartServiceException;
 	

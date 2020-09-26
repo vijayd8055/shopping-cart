@@ -2,7 +2,7 @@ package com.mindtree.shoppingcart.dto;
 
 import java.io.Serializable;
 
-public class BookResponseDto implements Serializable{
+public class BookResponseDto implements Serializable {
 	/**
 	 * 
 	 */

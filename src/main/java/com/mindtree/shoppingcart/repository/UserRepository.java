@@ -10,9 +10,9 @@ import com.mindtree.shoppingcart.entity.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer>{
 
-	@Query(value = "SELECT * FROM shoppingcart.user_detail WHERE user_name = :userName", nativeQuery = true)
+	@Query(value = "SELECT * FROM user_detail ud WHERE ud.user_name = :userName", nativeQuery = true)
     User findUserByUserName(@Param("userName") String userName);
 	
-	@Query(value = "SELECT * FROM shoppingcart.user_detail WHERE user_email = :email", nativeQuery = true)
+	@Query(value = "SELECT * FROM user_detail ud WHERE ud.user_email = :email", nativeQuery = true)
     User findUserByEmail(@Param("email") String email);
 }

@@ -1,7 +1,7 @@
-%PARSER_ERROR[d] - Starting ShoppingCartApplication on javavm with PID 4516 (C:\WORK\codebase\shopping-cart\target\classes started by vmadmin in C:\WORK\codebase\shopping-cart)
+%PARSER_ERROR[d] - Starting ShoppingCartApplication on javavm with PID 5408 (C:\WORK\codebase\shopping-cart\target\classes started by vmadmin in C:\WORK\codebase\shopping-cart)
 %PARSER_ERROR[d] - No active profile set, falling back to default profiles: default
 %PARSER_ERROR[d] - Bootstrapping Spring Data JPA repositories in DEFERRED mode.
-%PARSER_ERROR[d] - Finished Spring Data repository scanning in 163ms. Found 6 JPA repository interfaces.
+%PARSER_ERROR[d] - Finished Spring Data repository scanning in 114ms. Found 6 JPA repository interfaces.
 %PARSER_ERROR[d] - Tomcat initialized with port(s): 8080 (http)
 %PARSER_ERROR[d] - Starting service [Tomcat]
 %PARSER_ERROR[d] - Starting Servlet engine: [Apache Tomcat/9.0.38]
@@ -10,40 +10,32 @@
 %PARSER_ERROR[d] - APR/OpenSSL configuration: useAprConnector [false], useOpenSSL [true]
 %PARSER_ERROR[d] - OpenSSL successfully initialized [OpenSSL 1.1.1g  21 Apr 2020]
 %PARSER_ERROR[d] - Initializing Spring embedded WebApplicationContext
-%PARSER_ERROR[d] - Root WebApplicationContext: initialization completed in 5356 ms
+%PARSER_ERROR[d] - Root WebApplicationContext: initialization completed in 2105 ms
 %PARSER_ERROR[d] - Initializing ExecutorService 'applicationTaskExecutor'
-%PARSER_ERROR[d] - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'shoppingCartController': Unsatisfied dependency expressed through field 'shoppingCartService'; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'com.mindtree.shoppingcart.service.ShoppingCartService' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {@org.springframework.beans.factory.annotation.Autowired(required=true)}
-%PARSER_ERROR[d] - Closing JPA EntityManagerFactory for persistence unit 'default'
+%PARSER_ERROR[d] - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
 %PARSER_ERROR[d] - HHH000204: Processing PersistenceUnitInfo [name: default]
 %PARSER_ERROR[d] - HHH000412: Hibernate ORM core version 5.4.20.Final
+%PARSER_ERROR[d] - Tomcat started on port(s): 8080 (http) with context path ''
+%PARSER_ERROR[d] - Triggering deferred initialization of Spring Data repositories…
 %PARSER_ERROR[d] - HCANN000001: Hibernate Commons Annotations {5.1.0.Final}
 %PARSER_ERROR[d] - HikariPool-1 - Starting...
 %PARSER_ERROR[d] - HikariPool-1 - Start completed.
 %PARSER_ERROR[d] - HHH000400: Using dialect: org.hibernate.dialect.MySQL5Dialect
 %PARSER_ERROR[d] - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
 %PARSER_ERROR[d] - Initialized JPA EntityManagerFactory for persistence unit 'default'
-%PARSER_ERROR[d] - Shutting down ExecutorService 'applicationTaskExecutor'
-%PARSER_ERROR[d] - HikariPool-1 - Shutdown initiated...
-%PARSER_ERROR[d] - HikariPool-1 - Shutdown completed.
-%PARSER_ERROR[d] - Stopping service [Tomcat]
-%PARSER_ERROR[d] - 
-
-Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
-%PARSER_ERROR[d] - 
-
-***************************
-APPLICATION FAILED TO START
-***************************
-
-Description:
-
-Field shoppingCartService in com.mindtree.shoppingcart.controller.ShoppingCartController required a bean of type 'com.mindtree.shoppingcart.service.ShoppingCartService' that could not be found.
-
-The injection point has the following annotations:
-	- @org.springframework.beans.factory.annotation.Autowired(required=true)
-
-
-Action:
-
-Consider defining a bean of type 'com.mindtree.shoppingcart.service.ShoppingCartService' in your configuration.
-
+%PARSER_ERROR[d] - Spring Data repositories initialized!
+%PARSER_ERROR[d] - Started ShoppingCartApplication in 7.863 seconds (JVM running for 8.356)
+%PARSER_ERROR[d] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+%PARSER_ERROR[d] - Initializing Servlet 'dispatcherServlet'
+%PARSER_ERROR[d] - Completed initialization in 11 ms
+%PARSER_ERROR[d] - Product Updated
+%PARSER_ERROR[d] - Product added to Cart.
+%PARSER_ERROR[d] - No more Product with id:4
+%PARSER_ERROR[d] - Product Updated
+%PARSER_ERROR[d] - Product added to Cart.
+%PARSER_ERROR[d] - Product Updated
+%PARSER_ERROR[d] - Product added to Cart.
+%PARSER_ERROR[d] - No Cart present with Product id:1
+%PARSER_ERROR[d] - Product Updated
+%PARSER_ERROR[d] - Product added to Cart.
+%PARSER_ERROR[d] - Product Updated

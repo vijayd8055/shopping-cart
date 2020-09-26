@@ -18,8 +18,8 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "PRODUCT")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class Product implements Serializable{
-	
+public class Product implements Serializable {
+
 	/**
 	 * 
 	 */
@@ -38,8 +38,8 @@ public class Product implements Serializable{
 
 	@Column(name = "PRICE")
 	private float price;
-	
-	@OneToMany(mappedBy = "pk.product" , cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+
+	@OneToMany(mappedBy = "pk.product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<CartProduct> cartProducts;
 
 	public int getProductId() {
@@ -141,7 +141,5 @@ public class Product implements Serializable{
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	
-	
 
 }

@@ -2,7 +2,7 @@ package com.mindtree.shoppingcart.dto;
 
 import java.io.Serializable;
 
-public class ApparalRequestDto implements Serializable{
+public class ApparalRequestDto implements Serializable {
 
 	/**
 	 * 
@@ -104,5 +104,5 @@ public class ApparalRequestDto implements Serializable{
 		return "ApparalRequestDto [type=" + type + ", brand=" + brand + ", design=" + design + ", unitPrice="
 				+ unitPrice + ", quantity=" + quantity + "]";
 	}
-	
+
 }

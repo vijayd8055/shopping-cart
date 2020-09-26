@@ -28,61 +28,48 @@ public class ShoppingCartController {
 
 	@Autowired
 	ShoppingCartService shoppingCartService;
-	
-	//---Search Product---
-	
+
+	// ---Search Product---
+
 	// Search Product By ID
-		@RequestMapping(value = "/searchProductById/{id}", method = RequestMethod.GET)
-		public ResponseEntity<?> searchProductById(@PathVariable("id") int id) {
-			try {
-				List<Object> response = null;
-				response = shoppingCartService.searchProductById(id);
-				return new ResponseEntity<>(response, HttpStatus.OK);
-			} catch (ShoppingCartServiceException e) {
-				return new ResponseEntity<>("Exception"+e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
-			}
-		}
-
-		// Search Product By Name
-		@RequestMapping(value = "/searchProductByName/{name}", method = RequestMethod.GET)
-		public ResponseEntity<?> searchProductByName(@PathVariable("name") String name) {
-			try {
-				List<Object> response = null;
-				response = shoppingCartService.searchProductByName(name);
-				return new ResponseEntity<>(response, HttpStatus.OK);
-			} catch (ShoppingCartServiceException e) {
-				return new ResponseEntity<>("Exception"+e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
-			}
-		}
-
-		// Search Product By Category
-		@RequestMapping(value = "/searchProductByCategory/{category}", method = RequestMethod.GET)
-		public ResponseEntity<?> searchProductByCategory(@PathVariable("category") String category) {
-			try {
-				List<Object> response = null;
-				response = shoppingCartService.searchProductByCategory(category);
-				return new ResponseEntity<>(response, HttpStatus.OK);
-			} catch (ShoppingCartServiceException e) {
-				return new ResponseEntity<>("Exception"+e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
-			}
-		}
-
-	//Delete Product by ID	 -> exception handling done
-	@RequestMapping(value = "/deleteProduct/{id}", method = RequestMethod.GET)
-	public ResponseEntity<?> deleteBook(@PathVariable("id") int id) {
+	@RequestMapping(value = "/searchProductById/{id}", method = RequestMethod.GET)
+	public ResponseEntity<?> searchProductById(@PathVariable("id") int id) {
 		try {
-			String message = "";
-			message = shoppingCartService.deleteProductById(id);
-			return new ResponseEntity<>(message, HttpStatus.OK);
+			List<Object> response = null;
+			response = shoppingCartService.searchProductById(id);
+			return new ResponseEntity<>(response, HttpStatus.OK);
 		} catch (ShoppingCartServiceException e) {
-			return new ResponseEntity<>("Exception"+e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("Exception" + e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
 		}
 	}
 
-	
+	// Search Product By Name
+	@RequestMapping(value = "/searchProductByName/{name}", method = RequestMethod.GET)
+	public ResponseEntity<?> searchProductByName(@PathVariable("name") String name) {
+		try {
+			List<Object> response = null;
+			response = shoppingCartService.searchProductByName(name);
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		} catch (ShoppingCartServiceException e) {
+			return new ResponseEntity<>("Exception" + e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+		}
+	}
 
+	// Search Product By Category
+	@RequestMapping(value = "/searchProductByCategory/{category}", method = RequestMethod.GET)
+	public ResponseEntity<?> searchProductByCategory(@PathVariable("category") String category) {
+		try {
+			List<Object> response = null;
+			response = shoppingCartService.searchProductByCategory(category);
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		} catch (ShoppingCartServiceException e) {
+			return new ResponseEntity<>("Exception" + e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+		}
+	}
 
-	//Add Product To Cart	 -> exception handling done
+	// --- Add ---
+
+	// Add Product To Cart
 	@RequestMapping(value = "/addToCart", method = RequestMethod.POST)
 	public ResponseEntity<?> addToCart(@RequestBody UserProductDto userProduct) {
 		try {
@@ -90,11 +77,13 @@ public class ShoppingCartController {
 			message = shoppingCartService.addToCart(userProduct);
 			return new ResponseEntity<>(message, HttpStatus.OK);
 		} catch (ShoppingCartServiceException e) {
-			return new ResponseEntity<>("Exception"+e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("Exception" + e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
 		}
 	}
 
-	//Remove Product from Cart	 -> exception handling done
+	// --- Remove ---
+
+	// Remove Product from Cart
 	@RequestMapping(value = "/removeProductFromCart", method = RequestMethod.POST)
 	public ResponseEntity<?> removeProductFromCart(@RequestBody RemoveProductFromCartDto removeProductById) {
 		try {
@@ -102,11 +91,11 @@ public class ShoppingCartController {
 			message = shoppingCartService.removeProductFromCart(removeProductById);
 			return new ResponseEntity<>(message, HttpStatus.OK);
 		} catch (ShoppingCartServiceException e) {
-			return new ResponseEntity<>("Exception"+e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("Exception" + e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
 		}
 	}
 
-	//Remove All Product from Cart	 -> exception handling done
+	// Remove All Product from Cart
 	@RequestMapping(value = "/removeAllProductFromCart", method = RequestMethod.POST)
 	public ResponseEntity<?> removeAllProductFromCart(@RequestBody User user) {
 		try {
@@ -114,11 +103,13 @@ public class ShoppingCartController {
 			message = shoppingCartService.removeAllProductFromCart(user);
 			return new ResponseEntity<>(message, HttpStatus.OK);
 		} catch (ShoppingCartServiceException e) {
-			return new ResponseEntity<>("Exception"+e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("Exception" + e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
 		}
 	}
 
-	//Update Product from Cart	 -> exception handling done	
+	// --- Updating the cart ---
+
+	// Update Product from Cart
 	@RequestMapping(value = "/updateProductInCart", method = RequestMethod.POST)
 	public ResponseEntity<?> updateProductInCart(@RequestBody UpdateProductDto updateProduct) {
 		try {
@@ -126,23 +117,25 @@ public class ShoppingCartController {
 			message = shoppingCartService.updateProductInCart(updateProduct);
 			return new ResponseEntity<>(message, HttpStatus.OK);
 		} catch (ShoppingCartServiceException e) {
-			return new ResponseEntity<>("Exception"+e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("Exception" + e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
 		}
 	}
 
-	//View My Cart	 -> exception handling done	
-	@RequestMapping(value = "/viewMyCart", method = RequestMethod.POST)
+	// --- View Cart details ---
+
+	// View Cart
+	@RequestMapping(value = "/viewCart", method = RequestMethod.POST)
 	public ResponseEntity<?> viewMyCart(@RequestBody User user) {
 		try {
 			Map<String, Object> response = null;
 			response = shoppingCartService.viewMyCart(user);
 			return new ResponseEntity<>(response, HttpStatus.OK);
 		} catch (ShoppingCartServiceException e) {
-			return new ResponseEntity<>("Exception"+e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("Exception" + e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
 		}
 	}
 
-	//View All Product	 -> exception handling done	
+	// View All Product
 	@RequestMapping(value = "/viewAllProduct", method = RequestMethod.GET)
 	public ResponseEntity<?> viewAllProduct() {
 		try {
@@ -150,23 +143,22 @@ public class ShoppingCartController {
 			response = shoppingCartService.viewAllProduct();
 			return new ResponseEntity<>(response, HttpStatus.OK);
 		} catch (ShoppingCartServiceException e) {
-			return new ResponseEntity<>("Exception"+e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("Exception" + e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
 		}
 	}
 
 	// Search Product
 	@RequestMapping(value = "/searchProduct", method = RequestMethod.GET)
 	public ResponseEntity<?> searchProduct(@RequestParam(value = "id", required = false) Integer id,
-			@RequestParam(value = "name", required = false) String name, @RequestParam(value = "category", required = false) String category) {
+			@RequestParam(value = "name", required = false) String name,
+			@RequestParam(value = "category", required = false) String category) {
 		try {
-			return new ResponseEntity<String>("Id:" + id + " Name:" + name+" Category:"+category, HttpStatus.OK);
+			return new ResponseEntity<String>("Id:" + id + " Name:" + name + " Category:" + category, HttpStatus.OK);
 		} catch (Exception e) {
-			return new ResponseEntity<>("Exception"+e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
-		} 
+			return new ResponseEntity<>("Exception" + e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+		}
 	}
 
-	
-	
 	@RequestMapping(value = "/home", method = RequestMethod.GET)
 	public ResponseEntity<?> home() {
 		return new ResponseEntity<>("Home", HttpStatus.OK);
@@ -174,6 +166,6 @@ public class ShoppingCartController {
 
 	@RequestMapping(value = "*", method = RequestMethod.GET)
 	public ResponseEntity<?> error() {
-		return new ResponseEntity<>("Error", HttpStatus.BAD_GATEWAY);
+		return new ResponseEntity<>("Error: BAD GATEWAY: Please verify accessed URL or Method of Request !!", HttpStatus.BAD_GATEWAY);
 	}
 }

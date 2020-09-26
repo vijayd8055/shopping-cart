@@ -9,7 +9,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "BOOK")
-public class Book extends Product implements Serializable,Comparable<Book>{
+public class Book extends Product implements Serializable, Comparable<Book> {
 
 	/**
 	 * 
@@ -24,11 +24,15 @@ public class Book extends Product implements Serializable,Comparable<Book>{
 
 	@Column(name = "PUBLICATION")
 	private String publication;
-	
+
 	@Override
 	public int compareTo(Book o) {
-		// TODO Auto-generated method stub
-		return 0;
+		if (this.getProductId() == o.getProductId())
+			return 0;
+		else if (this.getProductId() > o.getProductId())
+			return 1;
+		else
+			return -1;
 	}
 
 	public String getGenre() {
@@ -114,7 +118,5 @@ public class Book extends Product implements Serializable,Comparable<Book>{
 		super(productId, productName, quantity, price, cartProducts);
 		// TODO Auto-generated constructor stub
 	}
-	
-	
 
 }

@@ -2,13 +2,11 @@ package com.mindtree.shoppingcart.dto;
 
 import java.io.Serializable;
 
-public class UpdateProductDto implements Serializable{
+public class UpdateProductDto implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private int userId;
 	private int productId;
 	private int quantity;
-
-	
 
 	public int getUserId() {
 		return userId;

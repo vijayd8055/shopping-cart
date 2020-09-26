@@ -1,8 +1,6 @@
 package com.mindtree.shoppingcart.dao;
 
-
 import java.util.List;
-import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
@@ -26,7 +24,6 @@ import com.mindtree.shoppingcart.entity.Cart;
 import com.mindtree.shoppingcart.entity.CartProduct;
 import com.mindtree.shoppingcart.entity.Product;
 import com.mindtree.shoppingcart.entity.User;
-import com.mindtree.shoppingcart.exception.AddProductException;
 import com.mindtree.shoppingcart.exception.DeleteApparalException;
 import com.mindtree.shoppingcart.exception.DeleteBookException;
 import com.mindtree.shoppingcart.exception.ProductException;
@@ -65,24 +62,24 @@ public class ShoppingCartDaoImpl implements ShoppingCartDao {
 	@PersistenceContext
 	private EntityManager entityManager;
 
-	//---Search---
+	// ---Search---
 
 	// Get Product By Id
-		public Product getProductbyId(int productId) throws ProductException {
-			try {
-				String message = "";
-				if (prodRepo.findById(productId).isPresent())
-					return prodRepo.findById(productId).get();
-				else
-					message = "Product ID is Invalid!";
-					logger.info(message);
-					return null;
-			} catch (Exception e) {
-				logger.error(e.getMessage() + ": Error in getProductbyId()");
-				throw new ProductException(e.getMessage() + ": Error in getProductbyId()");
-			}
-
+	public Product getProductbyId(int productId) throws ProductException {
+		try {
+			String message = "";
+			if (prodRepo.findById(productId).isPresent())
+				return prodRepo.findById(productId).get();
+			else
+				message = "Product ID is Invalid!";
+			logger.info(message);
+			return null;
+		} catch (Exception e) {
+			logger.error(e.getMessage() + ": Error in getProductbyId()");
+			throw new ProductException(e.getMessage() + ": Error in getProductbyId()");
 		}
+
+	}
 
 	// Add Cart to User
 	public String addProductToCart(Cart cart) throws ShoppingCartException {
@@ -98,10 +95,8 @@ public class ShoppingCartDaoImpl implements ShoppingCartDao {
 		}
 	}
 
-	
-
 	// Check Product Already Present in the Cart by ID
-	public CartProduct checkProductAlreadyPresent(int cartId, int productId) throws ProductException {
+	public CartProduct checkProductAlreadyPresent(int cartId, int productId, int quantity) throws ProductException {
 		try {
 			return cartProductRepo.findCartProduct(cartId, productId);
 		} catch (Exception e) {
@@ -269,7 +264,7 @@ public class ShoppingCartDaoImpl implements ShoppingCartDao {
 	// Get Apparel by ID
 	public Apparal getApparalById(int productId) throws ShoppingCartException {
 		try {
-			return (apparalRepo.findById(productId).isPresent()) ? apparalRepo.findById(productId).get() : null;
+			return (apparalRepo.existsById(productId) ? apparalRepo.getOne(productId) : null);
 		} catch (Exception e) {
 			logger.error(e.getLocalizedMessage() + ": Error in getApparalById()");
 			throw new ShoppingCartException(e.getMessage() + ": Error in getApparalById()");
@@ -279,68 +274,18 @@ public class ShoppingCartDaoImpl implements ShoppingCartDao {
 	// Get Book by ID
 	public Book getBookById(int productId) throws ShoppingCartException {
 		try {
-			return (bookRepo.findById(productId).isPresent()) ? bookRepo.findById(productId).get() : null;
+			if (bookRepo.existsById(productId)) {
+				return bookRepo.getOne(productId);
+			} else {
+				return null;
+			}
 		} catch (Exception e) {
 			logger.error(e.getLocalizedMessage() + ": Error in getBookById()");
 			throw new ShoppingCartException(e.getMessage() + ": Error in getBookById()");
 		}
 	}
 
-	// Get All Book Details By Name
-	public List<Book> getAllBookDetailsByName(String name) throws ShoppingCartException {
-		try {
-			CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-			CriteriaQuery<Book> createQuery = criteriaBuilder.createQuery(Book.class);
-			Root<Book> from = createQuery.from(Book.class);
-
-			Expression<String> path = from.get("genre");
-			ParameterExpression<String> param = criteriaBuilder.parameter(String.class);
-
-			createQuery.select(from).where(criteriaBuilder.like(path, param));
-			TypedQuery<Book> typedQuery = entityManager.createQuery(createQuery);
-			typedQuery.setParameter(param, "%" + name + "%");
-			List<Book> bookList = typedQuery.getResultList();
-
-			for (Book book : bookList) {
-				System.out.println("1st : " + book);
-			}
-
-			entityManager.close();
-			return bookList;
-		} catch (Exception e) {
-			logger.error(e.getLocalizedMessage() + ": Error in getAllBookDetailsByName()");
-			throw new ShoppingCartException(e.getMessage() + ": Error in getAllBookDetailsByName()");
-		}
-	}
-
-	// Get All Apparel Details By Name
-	public List<Apparal> getAllApparalDetailsByName(String name) throws ShoppingCartException {
-		try {
-			CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-			CriteriaQuery<Apparal> createQuery = criteriaBuilder.createQuery(Apparal.class);
-			Root<Apparal> from = createQuery.from(Apparal.class);
-
-			Expression<String> path = from.get("brand");
-			ParameterExpression<String> param = criteriaBuilder.parameter(String.class);
-
-			createQuery.select(from).where(criteriaBuilder.like(path, param));
-			TypedQuery<Apparal> typedQuery = entityManager.createQuery(createQuery);
-			typedQuery.setParameter(param, "%" + name + "%");
-			List<Apparal> apparalList = typedQuery.getResultList();
-
-			for (Apparal apparal : apparalList) {
-				System.out.println("1st : " + apparal);
-			}
-
-			entityManager.close();
-			return apparalList;
-		} catch (Exception e) {
-			logger.error(e.getLocalizedMessage() + ": Error in getAllApparalDetailsByName()");
-			throw new ShoppingCartException(e.getMessage() + ": Error in getAllApparalDetailsByName()");
-		}
-	}
-
-	// Get All Apparel Details By Category
+	// Get Product Details By Category
 	public List<Product> getProductbyCategory(String category) throws ShoppingCartException {
 		try {
 			CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -355,28 +300,12 @@ public class ShoppingCartDaoImpl implements ShoppingCartDao {
 			typedQuery.setParameter(param, "%" + category + "%");
 			List<Product> productList = typedQuery.getResultList();
 
-			for (Product product : productList) {
-				System.out.println("1st : " + product);
-			}
-
 			entityManager.close();
 			return productList;
 		} catch (Exception e) {
 			logger.error(e.getLocalizedMessage() + ": Error in getProductbyCategory()");
 			throw new ShoppingCartException(e.getMessage() + ": Error in getProductbyCategory()");
 		}
-	}
-
-	@Override
-	public String addBook(Book book) throws AddProductException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String addApparal(Apparal apparal) throws AddProductException {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
@@ -387,11 +316,49 @@ public class ShoppingCartDaoImpl implements ShoppingCartDao {
 				return userRepo.getOne(userId);
 			else
 				message = "Product ID is Invalid!";
-				logger.info(message);
-				return null;
+			logger.info(message);
+			return null;
 		} catch (Exception e) {
 			logger.error(e.getMessage() + ": Error in getProductbyId()");
 			throw new ProductException(e.getMessage() + ": Error in getProductbyId()");
 		}
-	}	
+	}
+
+	@Override
+	public List<Integer> getProductIDByName(String name) throws ProductException {
+		try {
+			String message = "";
+			List<Integer> ids = prodRepo.getProductIDByName(name);
+			if (ids != null)
+				return ids;
+			else
+				message = "Product name is Invalid!";
+			logger.info(message);
+			return null;
+		} catch (Exception e) {
+			logger.error(e.getMessage() + ": Error in getProductIDByName()");
+			throw new ProductException(e.getMessage() + ": Error in getProductIDByName()");
+		}
+
+	}
+
+	@Override
+	public String checkProductType(int id) throws ProductException {
+		try {
+			String message = "";
+			if (bookRepo.existsById(id)) {
+				return "BOOK";
+			} else if (apparalRepo.existsById(id)) {
+				return "APPARAL";
+			} else {
+				message = "Product ID is Invalid!";
+				logger.info(message);
+				return null;
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage() + ": Error in checkProductType()");
+			throw new ProductException(e.getMessage() + ": Error in checkProductType()");
+		}
+
+	}
 }

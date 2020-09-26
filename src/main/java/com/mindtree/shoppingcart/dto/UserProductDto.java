@@ -6,6 +6,9 @@ public class UserProductDto implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private int userId;
+	private int productId;
+	private int quantity;
+
 	public int getUserId() {
 		return userId;
 	}
@@ -13,9 +16,6 @@ public class UserProductDto implements Serializable {
 	public void setUserId(int userId) {
 		this.userId = userId;
 	}
-
-	private int productId;
-	private int quantity;
 
 	public int getProductId() {
 		return productId;

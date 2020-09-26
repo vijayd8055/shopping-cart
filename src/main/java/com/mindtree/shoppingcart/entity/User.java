@@ -10,14 +10,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="USER")
-public class User implements Serializable{
+@Table(name = "USER")
+public class User implements Serializable {
 
 	/**
 	 * 
@@ -28,10 +27,12 @@ public class User implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "USER_ID")
 	private int userId;
-	
+
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinColumn(name = "CART_ID")
-	@JoinTable(name = "USER_CART", joinColumns = {@JoinColumn( referencedColumnName = "USER_ID"), }, inverseJoinColumns = {@JoinColumn(referencedColumnName = "CART_ID")})
+	@JoinTable(name = "USER_CART", joinColumns = {
+			@JoinColumn(referencedColumnName = "USER_ID"), }, inverseJoinColumns = {
+					@JoinColumn(referencedColumnName = "CART_ID") })
 	private Cart cart;
 
 	public int getUserId() {
@@ -93,6 +94,5 @@ public class User implements Serializable{
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	
-	
+
 }

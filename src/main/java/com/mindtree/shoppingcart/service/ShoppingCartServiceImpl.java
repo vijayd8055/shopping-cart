@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,9 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.mindtree.shoppingcart.dao.ShoppingCartDao;
-import com.mindtree.shoppingcart.dto.ApparalRequestDto;
 import com.mindtree.shoppingcart.dto.ApparalResponseDto;
-import com.mindtree.shoppingcart.dto.BookRequestDto;
 import com.mindtree.shoppingcart.dto.BookResponseDto;
 import com.mindtree.shoppingcart.dto.RemoveProductFromCartDto;
 import com.mindtree.shoppingcart.dto.UpdateProductDto;
@@ -28,7 +27,6 @@ import com.mindtree.shoppingcart.entity.Cart;
 import com.mindtree.shoppingcart.entity.CartProduct;
 import com.mindtree.shoppingcart.entity.Product;
 import com.mindtree.shoppingcart.entity.User;
-import com.mindtree.shoppingcart.exception.AddProductException;
 import com.mindtree.shoppingcart.exception.DeleteApparalException;
 import com.mindtree.shoppingcart.exception.DeleteBookException;
 import com.mindtree.shoppingcart.exception.ProductException;
@@ -38,7 +36,7 @@ import com.mindtree.shoppingcart.helper.CartProductPK;
 import com.mindtree.shoppingcart.helper.ProductResponseObject;
 
 @Service
-public abstract class ShoppingCartServiceImpl implements ShoppingCartService {
+public class ShoppingCartServiceImpl implements ShoppingCartService {
 
 	@Autowired
 	ShoppingCartDao dao;
@@ -61,71 +59,49 @@ public abstract class ShoppingCartServiceImpl implements ShoppingCartService {
 	// --- Search ---
 
 	// Search Product by Product ID
-		public List<Object> searchProductById(int id) throws ShoppingCartServiceException {
-			String message = null;
-			try {
-				List<Object> products = new ArrayList<Object>();
+	public List<Object> searchProductById(int id) throws ShoppingCartServiceException {
+		String message = null;
+		try {
+			List<Object> products = new ArrayList<Object>();
 
-				Product product = dao.getProductbyId(id);
+			Product product = dao.getProductbyId(id);
 
-				if (null == product) {
-					message = "No Product present with id:" + id;
+			if (null == product) {
+				message = "No Product present with id:" + id;
+				products.add(message);
+				logger.info(message);
+				return products;
+			}
+
+			if (product.getProductName().equals(prop.getProperty("cart.apparaltype"))) {
+				Apparal apparal = dao.getApparalById(product.getProductId());
+				if (apparal == null) {
+					message = "No Apparal Product present with id:" + product.getProductId();
 					products.add(message);
 					logger.info(message);
 					return products;
 				}
+				ApparalResponseDto apparalDto = productResponseObject.createApparalDtoResponseObject(apparal, 0);
+				products.add(apparalDto);
 
-				if (product.getProductName().equals(prop.getProperty("cart.apparaltype"))) {
-					Apparal apparal = dao.getApparalById(product.getProductId());
-					if (apparal == null) {
-						message = "No Apparal Product present with id:" + product.getProductId();
-						products.add(message);
-						logger.info(message);
-						return products;
-					}
-					ApparalResponseDto apparalDto = productResponseObject.createApparalDtoResponseObject(apparal, 0);
-					products.add(apparalDto);
-
-				} else if (product.getProductName().equals(prop.getProperty("cart.booktype"))) {
-					Book book = dao.getBookById(product.getProductId());
-					if (book == null) {
-						message = "No Book Product present with id:" + product.getProductId();
-						products.add(message);
-						logger.info(message);
-						return products;
-					}
-					BookResponseDto bookDto = productResponseObject.createBookDtoResponseObject(book, 0);
-					products.add(bookDto);
+			} else if (product.getProductName().equals(prop.getProperty("cart.booktype"))) {
+				Book book = dao.getBookById(product.getProductId());
+				if (book == null) {
+					message = "No Book Product present with id:" + product.getProductId();
+					products.add(message);
+					logger.info(message);
+					return products;
 				}
-
-				return products;
-			} catch (ShoppingCartException e) {
-				throw new ShoppingCartServiceException(e);
+				BookResponseDto bookDto = productResponseObject.createBookDtoResponseObject(book, 0);
+				products.add(bookDto);
 			}
-		}
-		
-		
-	// Add Book
-	public String addBook(BookRequestDto newBook) throws ShoppingCartServiceException {
-		try {
-			Book book = productResponseObject.createBookResponseObject(newBook);
-			return dao.addBook(book);
-		} catch (AddProductException e) {
+
+			return products;
+		} catch (ShoppingCartException e) {
 			throw new ShoppingCartServiceException(e);
 		}
 	}
 
-	// Apparel Book
-	public String addApparal(ApparalRequestDto newApparal) throws ShoppingCartServiceException {
-		try {
-			Apparal apparal = productResponseObject.createApparalResponseObject(newApparal);
-			return dao.addApparal(apparal);
-		} catch (AddProductException e) {
-			throw new ShoppingCartServiceException(e);
-		}
-	}
-
-	
 	// Add Product To Cart
 	public String addToCart(UserProductDto userProduct) throws ShoppingCartServiceException {
 		String message = null;
@@ -142,7 +118,7 @@ public abstract class ShoppingCartServiceImpl implements ShoppingCartService {
 			// Get User
 			User user = dao.getUserbyID(userProduct.getUserId());
 			if (null == user) {
-				message = "User not present with id:" + userProduct.getUserId() ;
+				message = "User not present with id:" + userProduct.getUserId();
 				logger.info(message);
 				return message;
 			}
@@ -159,14 +135,12 @@ public abstract class ShoppingCartServiceImpl implements ShoppingCartService {
 				return message;
 			}
 
-			// Cart{ cartId , [CartProduct{ quantity , CartProductPK{ cart , product }}]}
 			cart.setCartId(user.getCart().getCartId());
 
 			CartProduct resultCartProduct = increaseProductInCart(user.getCart().getCartId(),
-					userProduct.getProductId());
-			if (null != resultCartProduct) {
-				cartProduct.setQuantity(resultCartProduct.getQuantity() + 1);
-
+					userProduct.getProductId(), userProduct.getQuantity());
+			if (null != resultCartProduct) { // increases the quantity of product
+				cartProduct.setQuantity(resultCartProduct.getQuantity() + userProduct.getQuantity());
 			} else {
 				cartProduct.setQuantity(productIdCount);
 			}
@@ -197,9 +171,10 @@ public abstract class ShoppingCartServiceImpl implements ShoppingCartService {
 	}
 
 	// # METHOD
-	public CartProduct increaseProductInCart(int cartId, int productId) throws ShoppingCartServiceException {
+	public CartProduct increaseProductInCart(int cartId, int productId, int quantity)
+			throws ShoppingCartServiceException {
 		try {
-			CartProduct cartProduct = dao.checkProductAlreadyPresent(cartId, productId);
+			CartProduct cartProduct = dao.checkProductAlreadyPresent(cartId, productId, quantity);
 			return (null != cartProduct) ? cartProduct : null;
 		} catch (ProductException e) {
 			throw new ShoppingCartServiceException(e);
@@ -245,7 +220,7 @@ public abstract class ShoppingCartServiceImpl implements ShoppingCartService {
 			// Get User
 			User user = dao.getUserbyID(removeProductById.getUserId());
 			if (null == user) {
-				message = "User not present with ID:" +removeProductById.getUserId(); 
+				message = "User not present with ID:" + removeProductById.getUserId();
 				return message;
 			}
 			// Get Cart Detail
@@ -358,6 +333,8 @@ public abstract class ShoppingCartServiceImpl implements ShoppingCartService {
 			List<Apparal> apparalList = dao.getAllApparalDetails();
 			List<Book> bookList = dao.getAllBookDetails();
 			List<Object> prods = new ArrayList<Object>();
+			Collections.sort(apparalList);
+			Collections.sort(bookList);
 
 			for (Apparal apparal : apparalList) {
 				ApparalResponseDto apparalDto = productResponseObject.createApparalDtoResponseObject(apparal, 0);
@@ -380,75 +357,66 @@ public abstract class ShoppingCartServiceImpl implements ShoppingCartService {
 		String message = null;
 		try {
 			double totalCartValue = 0;
-			List<CartProduct> cartProducts = null;
-			List<Object> prods = new ArrayList<Object>();
-			Map<String, Object> hashProds = new HashMap<String, Object>();
+			List<CartProduct> cartProducts = new ArrayList<>();
+			List<Object> productList = new ArrayList<Object>();
+			Map<String, Object> productMap = new HashMap<String, Object>();
 
-			User userDetails = dao.getUserbyID(user.getUserId());
-			if (null == userDetails) {
-				message = "User not present with ID:" +user.getUserId();
-				hashProds.put("message", message);
-				logger.info(message);
-				return hashProds;
-			}
 			// Get Cart Detail
 			Cart cartDetail = dao.getCartDetailbyId(user.getCart().getCartId());
 			cartProducts = dao.getAllCartProductDetailsByCartId(cartDetail.getCartId());
 
 			if (cartProducts.isEmpty()) {
 				message = "No Product present in Cart id:" + cartDetail.getCartId();
-				hashProds.put("message", message);
+				productMap.put("message", message);
 				logger.info(message);
-				return hashProds;
+				return productMap;
 			}
 
-			for (CartProduct product : cartProducts) {
-				if (product.getPk().getProduct().getProductName().equals(prop.getProperty("cart.apparaltype"))) {
-					Apparal apparal = dao.getApparalById(product.getPk().getProduct().getProductId());
-
-					if (apparal == null)
-						continue;
+			for (CartProduct cartProduct : cartProducts) {
+				if (dao.checkProductType(cartProduct.getPk().getProduct().getProductId())
+						.equals(prop.getProperty("cart.apparaltype"))) {
+					Apparal apparal = dao.getApparalById(cartProduct.getPk().getProduct().getProductId());
 					ApparalResponseDto apparalDto = productResponseObject.createApparalDtoResponseObject(apparal,
-							product.getQuantity());
-					totalCartValue = totalCartValue + getCalculateTotalPrice(product);
-					prods.add(apparalDto);
+							cartProduct.getQuantity());
+					totalCartValue = totalCartValue + getCalculateTotalPrice(cartProduct);
+					productList.add(apparalDto);
 
-				} else if (product.getPk().getProduct().getProductName().equals(prop.getProperty("cart.booktype"))) {
-					Book book = dao.getBookById(product.getPk().getProduct().getProductId());
+				} else if (dao.checkProductType(cartProduct.getPk().getProduct().getProductId())
+						.equals(prop.getProperty("cart.booktype"))) {
+					Book book = dao.getBookById(cartProduct.getPk().getProduct().getProductId());
 
 					if (book == null)
 						continue;
-					BookResponseDto bookDto = productResponseObject.createBookDtoResponseObject(book, product.getQuantity());
-					totalCartValue = totalCartValue + getCalculateTotalPrice(product);
-					prods.add(bookDto);
+					BookResponseDto bookDto = productResponseObject.createBookDtoResponseObject(book,
+							cartProduct.getQuantity());
+					totalCartValue = totalCartValue + getCalculateTotalPrice(cartProduct);
+					productList.add(bookDto);
 				}
 			}
-			hashProds.put("ProductList", prods);
-			hashProds.put("TotalCartValue", totalCartValue);
-			return hashProds;
+			productMap.put("ProductList", productList);
+			productMap.put("TotalCartValue", totalCartValue);
+			return productMap;
 		} catch (ShoppingCartException e) {
 			throw new ShoppingCartServiceException(e);
 		}
 	}
 
-	
-
 	// Search Product by Product Name
+	@SuppressWarnings({ "null", "unused" })
 	public List<Object> searchProductByName(String name) throws ShoppingCartServiceException {
 		String message = null;
 		try {
 			List<Object> prods = new ArrayList<Object>();
-			List<Apparal> apparalList = null;
-			List<Book> bookList = null;
-
-			apparalList = dao.getAllApparalDetailsByName(name);
-			bookList = dao.getAllBookDetailsByName(name);
-
-			if (apparalList.isEmpty() && bookList.isEmpty()) {
-				message = "No Product present with name:" + name;
-				prods.add(message);
-				logger.info(message);
-				return prods;
+			List<Apparal> apparalList = new ArrayList<Apparal>();
+			List<Book> bookList = new ArrayList<Book>();
+			List<Integer> ids = dao.getProductIDByName(name);
+			if (ids != null) {
+				for (int id : ids) {
+					if (dao.checkProductType(id).equals(prop.getProperty("cart.apparaltype")))
+						apparalList.add(dao.getApparalById(id));
+					else
+						bookList.add(dao.getBookById(id));
+				}
 			}
 
 			if (!apparalList.isEmpty()) {
@@ -464,6 +432,12 @@ public abstract class ShoppingCartServiceImpl implements ShoppingCartService {
 					prods.add(bookDto);
 				}
 			}
+			if (apparalList == null && bookList == null) {
+				message = "No Product present with name:" + name;
+				prods.add(message);
+				logger.info(message);
+				return prods;
+			}
 			return prods;
 		} catch (ShoppingCartException e) {
 			throw new ShoppingCartServiceException(e);
@@ -475,41 +449,29 @@ public abstract class ShoppingCartServiceImpl implements ShoppingCartService {
 		String message = null;
 		try {
 			List<Object> prods = new ArrayList<Object>();
-			List<Product> productList = dao.getProductbyCategory(category);
-
-			if (productList.isEmpty()) {
-				message = "No Product present with category:" + category;
+			if (category.equals(prop.getProperty("cart.booktype"))) {
+				List<Book> books = dao.getAllBookDetails();
+				Collections.sort(books);
+				for (Book book : books) {
+					BookResponseDto bookResponseDto = productResponseObject.createBookDtoResponseObject(book, 0);
+					prods.add(bookResponseDto);
+				}
+				return prods;
+			} else if (category.equals(prop.getProperty("cart.apparaltype"))) {
+				List<Apparal> apparals = dao.getAllApparalDetails();
+				Collections.sort(apparals);
+				for (Apparal apparal : apparals) {
+					ApparalResponseDto apparalResponseDto = productResponseObject.createApparalResponseObject(apparal,
+							0);
+					prods.add(apparalResponseDto);
+				}
+				return prods;
+			} else {
+				message = "Entered Category is not present.";
 				prods.add(message);
-				logger.info(message);
 				return prods;
 			}
 
-			for (Product product : productList) {
-				if (product.getProductName().equals(prop.getProperty("cart.apparaltype"))) {
-					Apparal apparal = dao.getApparalById(product.getProductId());
-					if (apparal == null) {
-						message = "No Apparal Product present with id:" + product.getProductId();
-						prods.add(message);
-						logger.info(message);
-						return prods;
-					}
-					ApparalResponseDto apparalDto = productResponseObject.createApparalDtoResponseObject(apparal, 0);
-					prods.add(apparalDto);
-
-				} else if (product.getProductName().equals(prop.getProperty("cart.booktype"))) {
-					Book book = dao.getBookById(product.getProductId());
-					if (book == null) {
-						message = "No Book Product present with id:" + product.getProductId();
-						prods.add(message);
-						logger.info(message);
-						return prods;
-					}
-
-					BookResponseDto bookDto = productResponseObject.createBookDtoResponseObject(book, 0);
-					prods.add(bookDto);
-				}
-			}
-			return prods;
 		} catch (ShoppingCartException e) {
 			throw new ShoppingCartServiceException(e);
 		}
@@ -536,7 +498,7 @@ public abstract class ShoppingCartServiceImpl implements ShoppingCartService {
 			// Get User
 			User userDetail = dao.getUserbyID(updateProduct.getUserId());
 			if (null == userDetail) {
-				message = "User not present with ID:" + updateProduct.getUserId() ;
+				message = "User not present with ID:" + updateProduct.getUserId();
 				logger.info(message);
 				return message;
 			}

@@ -14,8 +14,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="CART")
-public class Cart implements Serializable{
+@Table(name = "CART")
+public class Cart implements Serializable {
 
 	/**
 	 * 
@@ -26,11 +26,11 @@ public class Cart implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "CART_ID")
 	private int cartId;
-	
+
 	@Column(name = "TOTAL_AMOUNT")
 	private double totalAmount;
-	
-	@OneToMany(mappedBy = "pk.cart", cascade=CascadeType.ALL , fetch = FetchType.LAZY)
+
+	@OneToMany(mappedBy = "pk.cart", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<CartProduct> cartProducts;
 
 	public int getCartId() {
@@ -106,6 +106,5 @@ public class Cart implements Serializable{
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	
-	
+
 }

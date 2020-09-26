@@ -9,7 +9,7 @@ import javax.persistence.Entity;
 import com.mindtree.shoppingcart.helper.CartProductPK;
 
 @Entity
-public class CartProduct implements Serializable{
+public class CartProduct implements Serializable {
 
 	/**
 	 * 
@@ -18,7 +18,7 @@ public class CartProduct implements Serializable{
 
 	@EmbeddedId
 	private CartProductPK pk;
-	
+
 	@Column(name = "PRODUCT_QUANTITY")
 	private int quantity;
 
@@ -81,6 +81,5 @@ public class CartProduct implements Serializable{
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	
-	
+
 }
